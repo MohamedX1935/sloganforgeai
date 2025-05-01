@@ -35,15 +35,6 @@ const Header: React.FC = () => {
             {language === 'fr' ? 'EN' : 'FR'}
           </Button>
           
-          <div className="hidden md:flex items-center space-x-3">
-            <Button variant="outline" className="text-sm">
-              {t('nav.login')}
-            </Button>
-            <Button className="text-sm bg-primary hover:bg-primary/90">
-              {t('nav.signup')}
-            </Button>
-          </div>
-          
           <Button variant="ghost" className="md:hidden text-gray-600">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
