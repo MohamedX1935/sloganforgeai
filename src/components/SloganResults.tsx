@@ -5,6 +5,7 @@ import { Slogan, rateSloganMock } from '@/utils/sloganUtils';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import PDFExport from './PDFExport';
 
 interface SloganResultsProps {
@@ -37,10 +38,6 @@ const SloganResults: React.FC<SloganResultsProps> = ({ slogans }) => {
 
   const handleRating = (id: string, rating: number) => {
     rateSloganMock(id, rating);
-  };
-
-  const handleCustomize = (slogan: string) => {
-    setSelectedSlogan(slogan);
   };
 
   if (slogans.length === 0) {
@@ -112,14 +109,24 @@ const SloganResults: React.FC<SloganResultsProps> = ({ slogans }) => {
                       {copiedId === slogan.id ? t('results.copied') : t('results.copy')}
                     </Button>
                     
-                    <Button 
-                      variant="default" 
-                      size="sm" 
-                      onClick={() => handleCustomize(slogan.text)}
-                      className="text-xs bg-primary hover:bg-primary/90"
-                    >
-                      {t('results.customize')}
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="default" 
+                          size="sm" 
+                          onClick={() => setSelectedSlogan(slogan.text)}
+                          className="text-xs bg-primary hover:bg-primary/90"
+                        >
+                          {t('results.customize')}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl p-0 bg-transparent border-none">
+                        <PDFExport 
+                          slogan={slogan.text} 
+                          onClose={() => setSelectedSlogan(null)} 
+                        />
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </div>
@@ -127,13 +134,6 @@ const SloganResults: React.FC<SloganResultsProps> = ({ slogans }) => {
           </div>
         </CardContent>
       </Card>
-      
-      {selectedSlogan && (
-        <PDFExport 
-          slogan={selectedSlogan} 
-          onClose={() => setSelectedSlogan(null)} 
-        />
-      )}
     </>
   );
 };
