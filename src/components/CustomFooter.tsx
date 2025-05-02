@@ -73,7 +73,7 @@ const CustomFooter: React.FC = () => {
             <h3 className="text-lg font-semibold text-primary mb-4">Contact</h3>
             <ul className="space-y-2">
               <li className="text-gray-600">IMBALL</li>
-              <li className="text-gray-600">contact@imball-official.com</li>
+              <li className="text-gray-600">imballcontact@imball.work.gd</li>
             </ul>
           </div>
         </div>
