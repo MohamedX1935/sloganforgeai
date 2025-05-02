@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useLanguage } from '@/hooks/useLanguage';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -12,7 +13,9 @@ const Header: React.FC = () => {
         <div className="flex-1"></div>
         
         <div className="flex items-center justify-center flex-1">
-          <h1 className="text-2xl font-bold text-primary">{t('site.title')}</h1>
+          <Link to="/" className="hover:opacity-80 transition-opacity">
+            <h1 className="text-2xl font-bold text-primary cursor-pointer">{t('site.title')}</h1>
+          </Link>
         </div>
         
         <div className="flex items-center justify-end flex-1 space-x-4">
