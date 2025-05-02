@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { downloadSloganAsPDF } from '@/utils/sloganUtils';
-import { Check, Download, Palette, Image, Type, AlignCenter, AlignLeft, AlignRight } from 'lucide-react';
+import { Check, Download, Palette, Image, Type, AlignCenter, AlignLeft, AlignRight, Save } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -24,12 +26,18 @@ interface PDFExportProps {
 const fontOptions = [
   { value: 'poppins', label: 'Poppins' },
   { value: 'inter', label: 'Inter' },
-  { value: 'georgia', label: 'Georgia' },
-  { value: 'arial', label: 'Arial' },
-  { value: 'verdana', label: 'Verdana' },
   { value: 'montserrat', label: 'Montserrat' },
   { value: 'roboto', label: 'Roboto' },
-  { value: 'merriweather', label: 'Merriweather' }
+  { value: 'lato', label: 'Lato' },
+  { value: 'open-sans', label: 'Open Sans' },
+  { value: 'raleway', label: 'Raleway' },
+  { value: 'nunito', label: 'Nunito' },
+  { value: 'playfair', label: 'Playfair Display' },
+  { value: 'oswald', label: 'Oswald' },
+  { value: 'merriweather', label: 'Merriweather' },
+  { value: 'georgia', label: 'Georgia' },
+  { value: 'arial', label: 'Arial' },
+  { value: 'verdana', label: 'Verdana' }
 ];
 
 const colorPresets = [
@@ -49,6 +57,13 @@ const alignmentOptions = [
   { value: 'right', icon: <AlignRight className="w-4 h-4" /> },
 ];
 
+const logoPositions = [
+  { value: 'top', label: 'Top' },
+  { value: 'bottom', label: 'Bottom' },
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
+];
+
 const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
   const { t } = useLanguage();
   const [font, setFont] = useState('poppins');
@@ -61,6 +76,9 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
   const [alignment, setAlignment] = useState<'left' | 'center' | 'right'>('center');
   const [activeTab, setActiveTab] = useState('design');
   const [success, setSuccess] = useState(false);
+  const [editedSlogan, setEditedSlogan] = useState(slogan);
+  const [logoPosition, setLogoPosition] = useState<'top' | 'bottom' | 'left' | 'right'>('top');
+  const [logoSize, setLogoSize] = useState(80);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -74,15 +92,21 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
     setSize(newValue[0]);
   };
 
+  const handleLogoSliderChange = (newValue: number[]) => {
+    setLogoSize(newValue[0]);
+  };
+
   const handleDownload = () => {
-    downloadSloganAsPDF(slogan, {
+    downloadSloganAsPDF(editedSlogan, {
       font,
       color,
       size: size.toString(), // Convert number to string
       format,
       logo: logo || undefined,
       backgroundColor,
-      alignment
+      alignment,
+      logoPosition,
+      logoSize: logoSize.toString()
     });
     
     setSuccess(true);
@@ -91,11 +115,22 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
     }, 2000);
   };
 
+  // Function to determine CSS class based on logo position
+  const getLogoContainerClass = () => {
+    switch (logoPosition) {
+      case 'top': return 'flex flex-col items-center mb-4';
+      case 'bottom': return 'flex flex-col-reverse items-center mt-4';
+      case 'left': return 'flex flex-row items-center gap-4';
+      case 'right': return 'flex flex-row-reverse items-center gap-4';
+      default: return 'flex flex-col items-center mb-4';
+    }
+  };
+
   return (
     <Card className="w-full max-w-5xl mx-auto border border-gray-200 shadow-lg">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-primary">{t('pdf.title')}</h2>
+          <h2 className="text-xl font-bold text-primary">Personnaliser le Slogan</h2>
           <Button variant="ghost" onClick={onClose} size="sm" className="rounded-full h-8 w-8 p-0">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -108,15 +143,15 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="design" className="flex items-center gap-2">
               <Palette className="w-4 h-4" />
-              {t('pdf.tabs.design')}
+              Design
             </TabsTrigger>
             <TabsTrigger value="format" className="flex items-center gap-2">
               <Image className="w-4 h-4" />
-              {t('pdf.tabs.format')}
+              Format
             </TabsTrigger>
             <TabsTrigger value="typography" className="flex items-center gap-2">
               <Type className="w-4 h-4" />
-              {t('pdf.tabs.typography')}
+              Typographie
             </TabsTrigger>
           </TabsList>
           
@@ -124,7 +159,17 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="color-picker">{t('pdf.color')}</Label>
+                  <Label>Texte du slogan</Label>
+                  <Textarea 
+                    value={editedSlogan} 
+                    onChange={(e) => setEditedSlogan(e.target.value)}
+                    className="resize-none"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="color-picker">Couleur du texte</Label>
                   <div className="flex items-center gap-3">
                     <Input
                       id="color-picker"
@@ -160,7 +205,7 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="bg-color-picker">{t('pdf.backgroundColor')}</Label>
+                  <Label htmlFor="bg-color-picker">Couleur de fond</Label>
                   <div className="flex items-center gap-3">
                     <Input
                       id="bg-color-picker"
@@ -179,7 +224,7 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>{t('pdf.alignment')}</Label>
+                  <Label>Alignement</Label>
                   <div className="flex bg-muted rounded-md p-1">
                     {alignmentOptions.map((option) => (
                       <button
@@ -203,28 +248,28 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                   className={`max-w-full overflow-hidden p-6 rounded-md`}
                   style={{ backgroundColor }}
                 >
-                  {logoPreview && (
-                    <div className={`flex justify-${alignment} mb-4`}>
+                  <div className={getLogoContainerClass()}>
+                    {logoPreview && (
                       <img 
                         src={logoPreview} 
                         alt="Logo"
-                        className="h-16 object-contain" 
+                        className="object-contain" 
+                        style={{ maxHeight: `${logoSize}px` }}
                       />
-                    </div>
-                  )}
-                  <h3 
-                    className={`text-${alignment} break-words`}
-                    style={{ 
-                      fontFamily: font === 'poppins' ? 'Poppins, sans-serif' : 
-                                font === 'inter' ? 'Inter, sans-serif' : font,
-                      color: color,
-                      fontSize: `${size}px`,
-                      lineHeight: '1.2',
-                      maxWidth: '100%',
-                    }}
-                  >
-                    {slogan}
-                  </h3>
+                    )}
+                    <h3 
+                      className={`text-${alignment} break-words`}
+                      style={{ 
+                        fontFamily: font,
+                        color: color,
+                        fontSize: `${size}px`,
+                        lineHeight: '1.2',
+                        maxWidth: '100%',
+                      }}
+                    >
+                      {editedSlogan}
+                    </h3>
+                  </div>
                 </div>
               </div>
             </div>
@@ -234,14 +279,14 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>{t('pdf.format')}</Label>
+                  <Label>Format</Label>
                   <div className="grid grid-cols-2 gap-4">
                     <div 
                       className={`border rounded-md p-4 cursor-pointer flex flex-col items-center justify-center ${format === 'portrait' ? 'border-primary bg-primary/10' : 'border-gray-200 hover:border-gray-300'}`}
                       onClick={() => setFormat('portrait')}
                     >
                       <div className="w-16 h-20 bg-gray-200 mb-2"></div>
-                      <span>{t('pdf.portrait')}</span>
+                      <span>Portrait</span>
                     </div>
                     
                     <div 
@@ -249,13 +294,13 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                       onClick={() => setFormat('landscape')}
                     >
                       <div className="w-20 h-16 bg-gray-200 mb-2"></div>
-                      <span>{t('pdf.landscape')}</span>
+                      <span>Paysage</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="logo-upload">{t('pdf.logo')}</Label>
+                  <Label htmlFor="logo-upload">Logo</Label>
                   <Input
                     id="logo-upload"
                     type="file"
@@ -264,7 +309,34 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                     className="cursor-pointer"
                   />
                   {logoPreview && (
-                    <div className="mt-2">
+                    <div className="mt-2 space-y-4">
+                      <div className="space-y-2">
+                        <Label>Position du logo</Label>
+                        <Select value={logoPosition} onValueChange={(value) => setLogoPosition(value as 'top' | 'bottom' | 'left' | 'right')}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choisir une position" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {logoPositions.map(position => (
+                              <SelectItem key={position.value} value={position.value}>
+                                {position.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Taille du logo ({logoSize}px)</Label>
+                        <Slider
+                          min={30}
+                          max={200}
+                          step={5}
+                          value={[logoSize]}
+                          onValueChange={handleLogoSliderChange}
+                        />
+                      </div>
+                      
                       <Button 
                         variant="outline" 
                         size="sm"
@@ -273,7 +345,7 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                           setLogoPreview(null);
                         }}
                       >
-                        {t('pdf.removeLogo')}
+                        Supprimer le logo
                       </Button>
                     </div>
                   )}
@@ -285,28 +357,26 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                   className={`max-w-full overflow-hidden p-6 rounded-md flex items-center justify-center ${format === 'landscape' ? 'w-[320px] h-[240px]' : 'w-[240px] h-[320px]'}`}
                   style={{ backgroundColor }}
                 >
-                  <div>
+                  <div className={getLogoContainerClass()}>
                     {logoPreview && (
-                      <div className={`flex justify-${alignment} mb-4`}>
-                        <img 
-                          src={logoPreview} 
-                          alt="Logo"
-                          className="h-16 object-contain" 
-                        />
-                      </div>
+                      <img 
+                        src={logoPreview} 
+                        alt="Logo"
+                        className="object-contain" 
+                        style={{ maxHeight: `${logoSize}px` }}
+                      />
                     )}
                     <h3 
                       className={`text-${alignment} break-words`}
                       style={{ 
-                        fontFamily: font === 'poppins' ? 'Poppins, sans-serif' : 
-                                  font === 'inter' ? 'Inter, sans-serif' : font,
+                        fontFamily: font,
                         color: color,
                         fontSize: `${Math.min(size, 32)}px`,
                         lineHeight: '1.2',
                         maxWidth: '100%',
                       }}
                     >
-                      {slogan}
+                      {editedSlogan}
                     </h3>
                   </div>
                 </div>
@@ -318,10 +388,10 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="font-select">{t('pdf.font')}</Label>
+                  <Label htmlFor="font-select">Police</Label>
                   <Select value={font} onValueChange={setFont}>
                     <SelectTrigger id="font-select">
-                      <SelectValue placeholder="Select font" />
+                      <SelectValue placeholder="Choisir une police" />
                     </SelectTrigger>
                     <SelectContent>
                       {fontOptions.map((option) => (
@@ -334,7 +404,7 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="size-slider">{t('pdf.size')} ({size}px)</Label>
+                  <Label htmlFor="size-slider">Taille ({size}px)</Label>
                   <Slider 
                     id="size-slider"
                     min={16}
@@ -346,10 +416,9 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                 </div>
                 
                 <div className="space-y-1 mt-4">
-                  <h4 className="text-sm font-medium">{t('pdf.fontPreview')}</h4>
+                  <h4 className="text-sm font-medium">Aperçu de la police</h4>
                   <div className="bg-gray-50 p-3 rounded-md border">
-                    <p style={{ fontFamily: font === 'poppins' ? 'Poppins, sans-serif' : 
-                                          font === 'inter' ? 'Inter, sans-serif' : font }}>
+                    <p style={{ fontFamily: font }}>
                       AaBbCcDdEeFfGgHhIiJjKkLlMm <br />
                       0123456789 !@#$%^&*()
                     </p>
@@ -362,35 +431,35 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
                   className="max-w-full overflow-hidden p-6 rounded-md"
                   style={{ backgroundColor }}
                 >
-                  {logoPreview && (
-                    <div className={`flex justify-${alignment} mb-4`}>
+                  <div className={getLogoContainerClass()}>
+                    {logoPreview && (
                       <img 
                         src={logoPreview} 
                         alt="Logo"
-                        className="h-16 object-contain" 
+                        className="object-contain" 
+                        style={{ maxHeight: `${logoSize}px` }}
                       />
-                    </div>
-                  )}
-                  <h3 
-                    className={`text-${alignment} break-words`}
-                    style={{ 
-                      fontFamily: font === 'poppins' ? 'Poppins, sans-serif' : 
-                                font === 'inter' ? 'Inter, sans-serif' : font,
-                      color: color,
-                      fontSize: `${size}px`,
-                      lineHeight: '1.2',
-                      maxWidth: '100%',
-                    }}
-                  >
-                    {slogan}
-                  </h3>
+                    )}
+                    <h3 
+                      className={`text-${alignment} break-words`}
+                      style={{ 
+                        fontFamily: font,
+                        color: color,
+                        fontSize: `${size}px`,
+                        lineHeight: '1.2',
+                        maxWidth: '100%',
+                      }}
+                    >
+                      {editedSlogan}
+                    </h3>
+                  </div>
                 </div>
               </div>
             </div>
           </TabsContent>
         </Tabs>
         
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end mt-6 gap-3">
           <Button
             onClick={handleDownload}
             className="py-6 px-8 text-lg flex items-center gap-2 bg-green-600 hover:bg-green-700"
@@ -398,12 +467,12 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
             {success ? (
               <>
                 <Check className="w-5 h-5" />
-                {t('pdf.downloaded')}
+                Téléchargé !
               </>
             ) : (
               <>
                 <Download className="w-5 h-5" />
-                {t('pdf.download')}
+                Télécharger
               </>
             )}
           </Button>
