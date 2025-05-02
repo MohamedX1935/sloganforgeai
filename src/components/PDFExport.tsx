@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { downloadSloganAsPDF } from '@/utils/sloganUtils';
-import { Check, Download, Palette, Image, Font, AlignCenter, AlignLeft, AlignRight } from 'lucide-react';
+import { Check, Download, Palette, Image, Type, AlignCenter, AlignLeft, AlignRight } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -79,7 +78,7 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
     downloadSloganAsPDF(slogan, {
       font,
       color,
-      size,
+      size: size.toString(), // Convert number to string
       format,
       logo: logo || undefined,
       backgroundColor,
@@ -116,7 +115,7 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
               {t('pdf.tabs.format')}
             </TabsTrigger>
             <TabsTrigger value="typography" className="flex items-center gap-2">
-              <Font className="w-4 h-4" />
+              <Type className="w-4 h-4" />
               {t('pdf.tabs.typography')}
             </TabsTrigger>
           </TabsList>

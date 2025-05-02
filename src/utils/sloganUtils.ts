@@ -197,6 +197,8 @@ export const downloadSloganAsPDF = (
     size: string; 
     format: 'portrait' | 'landscape';
     logo?: File;
+    backgroundColor?: string;
+    alignment?: 'left' | 'center' | 'right';
   }
 ): void => {
   console.log('Downloading slogan as PDF with options:', options);
@@ -214,3 +216,4 @@ export const downloadSloganAsPDF = (
   element.click();
   document.body.removeChild(element);
 };
+
