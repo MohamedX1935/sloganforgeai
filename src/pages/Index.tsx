@@ -6,7 +6,7 @@ import { LanguageProvider, useLanguage } from '@/hooks/useLanguage';
 import Header from '@/components/Header';
 import SloganGenerator from '@/components/SloganGenerator';
 import SloganResults from '@/components/SloganResults';
-import Footer from '@/components/Footer';
+import CustomFooter from '@/components/CustomFooter';
 import { Slogan } from '@/utils/sloganUtils';
 
 // Feature icons
@@ -207,7 +207,7 @@ const MainContent: React.FC = () => {
         </section>
       </main>
       
-      <Footer />
+      <CustomFooter />
     </div>
   );
 };
