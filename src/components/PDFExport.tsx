@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Card, CardContent } from "@/components/ui/card";
@@ -117,12 +116,34 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
   };
 
   const handleDownloadPNG = () => {
-    downloadSloganAsPNG(previewRef.current);
+    if (!previewRef.current) {
+      console.error('Preview reference is not available');
+      return;
+    }
     
-    setSuccess('png');
-    setTimeout(() => {
-      setSuccess(null);
-    }, 2000);
+    import('html-to-image')
+      .then((htmlToImage) => {
+        htmlToImage.toPng(previewRef.current, { quality: 0.95, backgroundColor })
+          .then((dataUrl) => {
+            const link = document.createElement('a');
+            link.download = `slogan-${Date.now()}.png`;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            setSuccess('png');
+            setTimeout(() => {
+              setSuccess(null);
+            }, 2000);
+          })
+          .catch((error) => {
+            console.error('Error generating PNG:', error);
+          });
+      })
+      .catch((error) => {
+        console.error('Failed to load html-to-image library:', error);
+      });
   };
 
   // Function to determine CSS class based on logo position

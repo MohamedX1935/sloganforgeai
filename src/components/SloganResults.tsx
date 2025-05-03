@@ -5,7 +5,7 @@ import { Slogan, rateSloganMock } from '@/utils/sloganUtils';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import PDFExport from './PDFExport';
 
 interface SloganResultsProps {
@@ -137,6 +137,7 @@ const SloganResults: React.FC<SloganResultsProps> = ({ slogans }) => {
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-4xl p-0 bg-transparent border-none">
+          <DialogTitle className="sr-only">Personnaliser le Slogan</DialogTitle>
           {selectedSlogan && (
             <PDFExport 
               slogan={selectedSlogan} 
