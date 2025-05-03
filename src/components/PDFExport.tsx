@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { downloadSloganAsPDF } from '@/utils/sloganUtils';
-import { Check, Download, Palette, Image, Type, AlignCenter, AlignLeft, AlignRight, Save } from 'lucide-react';
+import { downloadSloganAsPDF, downloadSloganAsPNG } from '@/utils/sloganUtils';
+import { Check, Download, Palette, Image, Type, AlignCenter, AlignLeft, AlignRight } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -41,14 +41,14 @@ const fontOptions = [
 ];
 
 const colorPresets = [
-  { value: '#2A5CAA', label: 'Blue' },
-  { value: '#27AE60', label: 'Green' },
-  { value: '#E74C3C', label: 'Red' },
+  { value: '#2A5CAA', label: 'Bleu' },
+  { value: '#27AE60', label: 'Vert' },
+  { value: '#E74C3C', label: 'Rouge' },
   { value: '#F39C12', label: 'Orange' },
-  { value: '#9B59B6', label: 'Purple' },
-  { value: '#34495E', label: 'Dark Blue' },
-  { value: '#000000', label: 'Black' },
-  { value: '#D4AF37', label: 'Gold' },
+  { value: '#9B59B6', label: 'Violet' },
+  { value: '#34495E', label: 'Bleu Foncé' },
+  { value: '#000000', label: 'Noir' },
+  { value: '#D4AF37', label: 'Or' },
 ];
 
 const alignmentOptions = [
@@ -58,10 +58,10 @@ const alignmentOptions = [
 ];
 
 const logoPositions = [
-  { value: 'top', label: 'Top' },
-  { value: 'bottom', label: 'Bottom' },
-  { value: 'left', label: 'Left' },
-  { value: 'right', label: 'Right' },
+  { value: 'top', label: 'Haut' },
+  { value: 'bottom', label: 'Bas' },
+  { value: 'left', label: 'Gauche' },
+  { value: 'right', label: 'Droite' },
 ];
 
 const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
@@ -75,10 +75,11 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
   const [backgroundColor, setBackgroundColor] = useState('#FFFFFF');
   const [alignment, setAlignment] = useState<'left' | 'center' | 'right'>('center');
   const [activeTab, setActiveTab] = useState('design');
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [editedSlogan, setEditedSlogan] = useState(slogan);
   const [logoPosition, setLogoPosition] = useState<'top' | 'bottom' | 'left' | 'right'>('top');
   const [logoSize, setLogoSize] = useState(80);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -96,11 +97,11 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
     setLogoSize(newValue[0]);
   };
 
-  const handleDownload = () => {
+  const handleDownloadPDF = () => {
     downloadSloganAsPDF(editedSlogan, {
       font,
       color,
-      size: size.toString(), // Convert number to string
+      size: size.toString(),
       format,
       logo: logo || undefined,
       backgroundColor,
@@ -109,9 +110,18 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
       logoSize: logoSize.toString()
     });
     
-    setSuccess(true);
+    setSuccess('pdf');
     setTimeout(() => {
-      setSuccess(false);
+      setSuccess(null);
+    }, 2000);
+  };
+
+  const handleDownloadPNG = () => {
+    downloadSloganAsPNG(previewRef.current);
+    
+    setSuccess('png');
+    setTimeout(() => {
+      setSuccess(null);
     }, 2000);
   };
 
@@ -245,6 +255,7 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
               
               <div className="bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center p-6 min-h-[300px]">
                 <div 
+                  ref={previewRef}
                   className={`max-w-full overflow-hidden p-6 rounded-md`}
                   style={{ backgroundColor }}
                 >
@@ -353,7 +364,7 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
               </div>
               
               <div className="bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center p-6">
-                <div 
+                <div
                   className={`max-w-full overflow-hidden p-6 rounded-md flex items-center justify-center ${format === 'landscape' ? 'w-[320px] h-[240px]' : 'w-[240px] h-[320px]'}`}
                   style={{ backgroundColor }}
                 >
@@ -461,18 +472,35 @@ const PDFExport: React.FC<PDFExportProps> = ({ slogan, onClose }) => {
         
         <div className="flex justify-end mt-6 gap-3">
           <Button
-            onClick={handleDownload}
-            className="py-6 px-8 text-lg flex items-center gap-2 bg-green-600 hover:bg-green-700"
+            onClick={handleDownloadPNG}
+            className="py-6 px-8 text-lg flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
           >
-            {success ? (
+            {success === 'png' ? (
               <>
                 <Check className="w-5 h-5" />
-                Téléchargé !
+                PNG téléchargé !
               </>
             ) : (
               <>
                 <Download className="w-5 h-5" />
-                Télécharger
+                Télécharger PNG
+              </>
+            )}
+          </Button>
+          
+          <Button
+            onClick={handleDownloadPDF}
+            className="py-6 px-8 text-lg flex items-center gap-2 bg-green-600 hover:bg-green-700"
+          >
+            {success === 'pdf' ? (
+              <>
+                <Check className="w-5 h-5" />
+                PDF téléchargé !
+              </>
+            ) : (
+              <>
+                <Download className="w-5 h-5" />
+                Télécharger PDF
               </>
             )}
           </Button>

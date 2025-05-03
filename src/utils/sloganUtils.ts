@@ -1,4 +1,3 @@
-
 // Mock data for demonstration - in a real app this would connect to an API
 // that uses AI model like GPT-4 to generate slogans
 
@@ -227,4 +226,30 @@ export const downloadSloganAsPDF = (
   document.body.appendChild(element);
   element.click();
   document.body.removeChild(element);
+};
+
+export const downloadSloganAsPNG = (elementRef: HTMLDivElement | null): void => {
+  if (!elementRef) {
+    console.error('Element reference is null');
+    return;
+  }
+
+  try {
+    import('html-to-image').then(htmlToImage => {
+      htmlToImage.toPng(elementRef)
+        .then(function (dataUrl) {
+          const link = document.createElement('a');
+          link.download = `slogan-${Date.now()}.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch(function (error) {
+          console.error('Error generating PNG:', error);
+        });
+    }).catch(error => {
+      console.error('Failed to load html-to-image library:', error);
+    });
+  } catch (error) {
+    console.error('Error during PNG generation:', error);
+  }
 };
