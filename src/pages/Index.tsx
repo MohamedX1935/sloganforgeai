@@ -8,6 +8,7 @@ import SloganGenerator from '@/components/SloganGenerator';
 import SloganResults from '@/components/SloganResults';
 import CustomFooter from '@/components/CustomFooter';
 import { Slogan } from '@/utils/sloganUtils';
+import Adsense from 'react-adsense';
 
 // Feature icons
 const AIIcon = () => (
@@ -107,6 +108,18 @@ const MainContent: React.FC = () => {
             <div id="results-section" className="mt-8">
               <SloganResults slogans={generatedSlogans} />
             </div>
+            {/* AdSense Placement */}
+            {generatedSlogans.length > 0 && (
+              <div className="my-8">
+                <Adsense
+                  client="ca-pub-5157014233026538" // Replace with your AdSense client ID
+                  slot="f08c47fec0942fa0"              // Replace with your AdSense slot ID
+                  style={{ display: 'block' }}
+                  format="auto"
+                  responsive="true"
+                />
+              </div>
+            )}            
           </div>
         </section>
         
