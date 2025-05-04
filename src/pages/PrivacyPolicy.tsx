@@ -4,10 +4,15 @@ import { LanguageProvider } from '@/hooks/useLanguage';
 import Header from '@/components/Header';
 import CustomFooter from '@/components/CustomFooter';
 import Adsense from 'react-adsense';
+import { Helmet } from 'react-helmet';
 
 const PrivacyPolicyContent: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5157014233026538" crossOrigin="anonymous"></script>
+      </Helmet>
+      
       <Header />
       
       <main className="flex-grow py-12">
@@ -92,15 +97,15 @@ const PrivacyPolicyContent: React.FC = () => {
               </p>
             </div>
             {/* AdSense Placement */}
-              <div className="my-8">
-                <Adsense
-                  client="ca-pub-5157014233026538" // Replace with your AdSense client ID
-                  slot="f08c47fec0942fa0"              // Replace with your AdSense slot ID
-                  style={{ display: 'block' }}
-                  format="auto"
-                  responsive="true"
-                />
-              </div>            
+            <div className="my-8">
+              <Adsense
+                client="ca-pub-5157014233026538"
+                slot="f08c47fec0942fa0"
+                style={{ display: 'block' }}
+                format="auto"
+                responsive="true"
+              />
+            </div>            
           </div>
         </div>
       </main>

@@ -9,6 +9,7 @@ import SloganResults from '@/components/SloganResults';
 import CustomFooter from '@/components/CustomFooter';
 import { Slogan } from '@/utils/sloganUtils';
 import Adsense from 'react-adsense';
+import { Helmet } from 'react-helmet';
 
 // Feature icons
 const AIIcon = () => (
@@ -53,6 +54,10 @@ const MainContent: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5157014233026538" crossOrigin="anonymous"></script>
+      </Helmet>
+      
       <Header />
       
       <main className="flex-grow">
@@ -112,8 +117,8 @@ const MainContent: React.FC = () => {
             {generatedSlogans.length > 0 && (
               <div className="my-8">
                 <Adsense
-                  client="ca-pub-5157014233026538" // Replace with your AdSense client ID
-                  slot="f08c47fec0942fa0"              // Replace with your AdSense slot ID
+                  client="ca-pub-5157014233026538"
+                  slot="f08c47fec0942fa0"
                   style={{ display: 'block' }}
                   format="auto"
                   responsive="true"
