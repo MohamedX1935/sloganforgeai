@@ -3,6 +3,7 @@ import React from 'react';
 import { LanguageProvider } from '@/hooks/useLanguage';
 import Header from '@/components/Header';
 import CustomFooter from '@/components/CustomFooter';
+import Adsense from 'react-adsense';
 
 const PrivacyPolicyContent: React.FC = () => {
   return (
@@ -90,6 +91,16 @@ const PrivacyPolicyContent: React.FC = () => {
                 Dernière mise à jour : 2 Mai 2025
               </p>
             </div>
+            {/* AdSense Placement */}
+              <div className="my-8">
+                <Adsense
+                  client="ca-pub-5157014233026538" // Replace with your AdSense client ID
+                  slot="f08c47fec0942fa0"              // Replace with your AdSense slot ID
+                  style={{ display: 'block' }}
+                  format="auto"
+                  responsive="true"
+                />
+              </div>            
           </div>
         </div>
       </main>
