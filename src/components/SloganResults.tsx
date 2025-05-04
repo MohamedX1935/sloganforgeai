@@ -136,7 +136,7 @@ const SloganResults: React.FC<SloganResultsProps> = ({ slogans }) => {
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-4xl p-0 bg-transparent border-none">
+        <DialogContent className="max-w-4xl p-0 bg-transparent border-none shadow-none">
           <DialogTitle className="sr-only">Personnaliser le Slogan</DialogTitle>
           {selectedSlogan && (
             <PDFExport 
